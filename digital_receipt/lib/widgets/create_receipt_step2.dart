@@ -1,7 +1,5 @@
 import 'dart:convert';
-import 'dart:math';
 import 'dart:io';
-
 import 'package:carousel_slider/carousel_controller.dart';
 import 'package:digital_receipt/models/receipt.dart';
 import 'package:digital_receipt/screens/no_internet_connection.dart';
@@ -18,9 +16,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
-import 'button_loading_indicator.dart';
 import 'package:digital_receipt/services/api_service.dart';
-
 
 class CreateReceiptStep2 extends StatefulWidget {
   CreateReceiptStep2({
@@ -139,7 +135,7 @@ class _CreateReceiptStep2State extends State<CreateReceiptStep2> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Row(
-                  children: map<Widget>([0, 1, 2], (index, url) {
+                  children: map<Widget>([0, 1, 2, 3], (index, url) {
                     print(index);
                     return GestureDetector(
                       onTap: () {
@@ -242,7 +238,7 @@ class _CreateReceiptStep2State extends State<CreateReceiptStep2> {
                     });
                   }
                 }),
-            SizedBox(
+            /* SizedBox(
               height: 20,
             ),
             Text('Seller\'s name'),
@@ -250,108 +246,10 @@ class _CreateReceiptStep2State extends State<CreateReceiptStep2> {
             AppTextFormField(
               controller: _sellerNameController,
             ),
-            /*  SizedBox(
-                    height: 30,
-                  ),
-                  DropdownButtonFormField<String>(
-                    value: fontVal,
-                    items: ['100', '200', '300', '400', '500']
-                        .map((val) => DropdownMenuItem(
-                              child: Text(val.toString()),
-                              value: val,
-                            ))
-                        .toList(),
-                    onChanged: (val) {
-                      setState(() {
-                        fontVal = val;
-                      });
-                    },
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      fontFamily: 'Montserrat',
-                    ),
-                    decoration: InputDecoration(
-                      contentPadding: EdgeInsets.all(15),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(5),
-                        borderSide: BorderSide(
-                          color: Color(0xFFC8C8C8),
-                          width: 1.5,
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(),
-                      //hintText: hintText,
-                      hintStyle: TextStyle(
-                        color: Color(0xFF979797),
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        fontFamily: 'Montserrat',
-                      ),
-                    ),
-                    iconEnabledColor: Color.fromRGBO(0, 0, 0, 0.87),
-                    hint: Text(
-                      'Select font',
-                      style: TextStyle(
-                        fontFamily: 'Montserrat',
-                        fontWeight: FontWeight.w500,
-                        letterSpacing: 0.3,
-                        fontSize: 16,
-                        color: Color(0xFF1B1B1B),
-                      ),
-                    ),
-                  ), */
+            */
             SizedBox(
-              height: 35,
+              height: 20,
             ),
-            /* SizedBox(
-                    height: 50,
-                    width: double.infinity,
-                    child: FlatButton(
-                      onPressed: getImageSignature,
-                      shape: RoundedRectangleBorder(
-                          side:
-                              BorderSide(color: Color(0xFF25CCB3), width: 1.5),
-                          borderRadius: BorderRadius.circular(5)),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Text(
-                            'Upload signature',
-                            style: TextStyle(
-                              fontFamily: 'Montserrat',
-                              fontWeight: FontWeight.normal,
-                              letterSpacing: 0.3,
-                              fontSize: 16,
-                              color: Colors.black,
-                            ),
-                          ),
-                          SizedBox(width: 7),
-                          Icon(
-                            Icons.file_upload,
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  Center(
-                    child: Text(
-                      'Your Signature should be taken on a clear white paper and have a max size of 3MB (Optional)',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontFamily: 'Montserrat',
-                        fontWeight: FontWeight.w300,
-                        letterSpacing: 0.3,
-                        fontSize: 14,
-                        color: Color.fromRGBO(0, 0, 0, 0.6),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 35,
-                  ),*/
             Row(
               children: <Widget>[
                 Text(
@@ -362,16 +260,6 @@ class _CreateReceiptStep2State extends State<CreateReceiptStep2> {
               ],
             ),
             SizedBox(height: 20),
-            // ColorPicker(
-            //   pickerColor: Colors.blue,
-            //   displayThumbColor: true,
-            //   // paletteType: PaletteType.rgb,
-            //   onColorChanged: (color) {
-            //     setState(() {
-            //       _hexCodeController.text = color.value.toRadixString(16);
-            //     });
-            //   },
-            // ),
             SizedBox(
               height: 33,
               child: SizedBox(
@@ -427,12 +315,12 @@ class _CreateReceiptStep2State extends State<CreateReceiptStep2> {
               ),
             ),
             SizedBox(height: 20),
-            Center(
+            /* Center(
               child: Text(
                 'Or type brand Hex code here',
                 textAlign: TextAlign.center,
               ),
-            ),
+            ), */
             SizedBox(height: 20),
             AppTextFormField(
               focusNode: _hexCodeFocus,
@@ -440,8 +328,9 @@ class _CreateReceiptStep2State extends State<CreateReceiptStep2> {
               onFieldSubmitted: (value) => _hexCodeFocus.unfocus(),
               controller: _hexCodeController,
               hintText: 'Enter Brand color hex code',
-              hintColor: Color.fromRGBO(0, 0, 0, 0.38),
+              hintColor: Theme.of(context).textTheme.subtitle2.color,
               borderWidth: 1.5,
+              readOnly: true,
             ),
             SizedBox(height: 37),
             /*  Text(
@@ -652,7 +541,7 @@ class _CreateReceiptStep2State extends State<CreateReceiptStep2> {
                     await Provider.of<Receipt>(context, listen: false)
                         .saveReceipt();
                 print(result);
-                if (result.statusCode == 200) {
+                if (result != null && result.statusCode == 200) {
                   setState(() {
                     isLoading = false;
                   });

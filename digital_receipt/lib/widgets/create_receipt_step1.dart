@@ -4,13 +4,10 @@ import 'package:digital_receipt/models/inventory.dart';
 import 'package:digital_receipt/models/product.dart';
 import 'package:digital_receipt/models/receipt.dart';
 import 'package:digital_receipt/screens/create_receipt_page.dart';
-import 'package:digital_receipt/screens/no_internet_connection.dart';
 import '../services/shared_preference_service.dart';
 import 'package:digital_receipt/services/CarouselIndex.dart';
 import 'package:digital_receipt/services/api_service.dart';
-import 'package:digital_receipt/utils/connected.dart';
 import 'package:digital_receipt/utils/receipt_util.dart';
-import 'package:digital_receipt/widgets/app_text_form_field.dart';
 import 'package:digital_receipt/widgets/date_time_input_textField.dart';
 import 'package:digital_receipt/widgets/product_detail.dart';
 import 'package:digital_receipt/widgets/app_solid_button.dart';
@@ -19,8 +16,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-import '../constant.dart';
-import 'contact_card.dart';
 
 class CreateReceiptStep1 extends StatefulWidget {
   const CreateReceiptStep1(
@@ -64,7 +59,7 @@ class _CreateReceiptStep1State extends State<CreateReceiptStep1> {
 
   getInventories() async {
     print('here');
-    currency = await SharedPreferenceService().getStringValuesSF('Currency');
+    currency = await SharedPreferenceService().getStringValuesSF('Currency') ?? '';
     try {
        Provider.of<Inventory>(context, listen: false).setInventoryList =
           await ApiService().getAllInventories();
@@ -241,14 +236,14 @@ class _CreateReceiptStep1State extends State<CreateReceiptStep1> {
                         );
                       },
                       title: thisProduct.productDesc,
-                      amount: currency +
-                          '${Utils.formatNumber(thisProduct.amount) ?? Utils.formatNumber(thisProduct.unitPrice * thisProduct.quantity)}',
+                      amount: 
+                          ' $currency${Utils.formatNumber(thisProduct.amount) ?? Utils.formatNumber(thisProduct.unitPrice * thisProduct.quantity)}',
                       // '${}',
                       index: index,
                     ),
                   );
                 }),
-            Row(
+           /*  Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text(
@@ -268,7 +263,7 @@ class _CreateReceiptStep1State extends State<CreateReceiptStep1> {
                   },
                 ),
               ],
-            ),
+            ), */
             _partPayment
                 ? Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

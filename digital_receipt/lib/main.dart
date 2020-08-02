@@ -1,21 +1,16 @@
-import 'dart:convert';
-import 'dart:async';
 import 'package:device_preview/device_preview.dart';
+import 'package:digital_receipt/colors.dart';
 import 'package:digital_receipt/models/customer.dart';
 import 'package:digital_receipt/models/inventory.dart';
 import 'package:digital_receipt/screens/home_page.dart';
 import 'package:digital_receipt/screens/login_screen.dart';
 import 'package:digital_receipt/screens/onboarding.dart';
-import 'package:digital_receipt/screens/setup.dart';
 import 'package:digital_receipt/services/api_service.dart';
 import 'package:digital_receipt/services/hiveDb.dart';
 import 'package:digital_receipt/services/notification.dart';
-import 'package:digital_receipt/utils/check_login.dart';
 import 'package:digital_receipt/utils/theme_manager.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hive/hive.dart';
 import 'package:theme_provider/theme_provider.dart';
 import 'dart:io';
@@ -28,9 +23,8 @@ import 'package:flutter/material.dart';
 import 'models/notification.dart';
 import './providers/business.dart';
 import 'models/receipt.dart';
-import 'services/sql_database_client.dart';
 import 'services/shared_preference_service.dart';
-import 'services/sql_database_repository.dart';
+
 import 'package:path_provider/path_provider.dart';
 
 AppNotification _appNotification = AppNotification();
@@ -43,14 +37,10 @@ void main() async {
     Hive.init(appDocumentDir.path);
 
     // runApp(MyApp(),);
-    runApp(
-      // DevicePreview(
-      // builder: (BuildContext context) =>
-      // */
-      MyApp(),
-      // enabled: kReleaseMode,
-      /* 
-    ) */
+    runApp(DevicePreview(
+      builder: (BuildContext context) => MyApp(),
+      enabled: kReleaseMode,
+    )
       // )
     );
   } catch (e) {
@@ -164,6 +154,7 @@ class _MyAppState extends State<MyApp> {
           child: Builder(
             builder: (themeContext) => MaterialApp(
               title: 'Degeit',
+              color: LightMode.primaryColor,
               theme: ThemeProvider.themeOf(themeContext).data,
               debugShowCheckedModeBanner: false,
               home: ScreenController(),
@@ -187,13 +178,12 @@ class ScreenController extends StatefulWidget {
 class _ScreenControllerState extends State<ScreenController> {
   final SharedPreferenceService _sharedPreferenceService =
       SharedPreferenceService();
-  static SqlDbClient sqlDbClient = SqlDbClient();
-  SqlDbRepository _sqlDbRepository = SqlDbRepository(sqlDbClient: sqlDbClient);
+  
   ApiService _apiService = ApiService();
 
   //Initializing SQL Database.
   initSharedPreferenceDb() async {
-    await _sqlDbRepository.createDatabase();
+ 
   }
 
   bool _currentAutoLogoutStatus;
@@ -258,8 +248,7 @@ class _ScreenControllerState extends State<ScreenController> {
           date: message["data"]["date"],
           isRead: message["data"]["isRead"],
         );
-        await _sqlDbRepository.insertNotification(notification);
-        //INSERTING NOTIFICATION TO SQFLITE DB
+       
       },
       onResume: (Map<String, dynamic> message) async {
         print("onResume: $message");
@@ -272,7 +261,7 @@ class _ScreenControllerState extends State<ScreenController> {
           date: message["data"]["date"],
           isRead: message["data"]["isRead"],
         );
-        await _sqlDbRepository.insertNotification(notification);
+ 
         //INSERTING NOTIFICATION TO SQFLITE DB
       },
     );
@@ -281,10 +270,7 @@ class _ScreenControllerState extends State<ScreenController> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: Future.wait([
-          _sharedPreferenceService.getStringValuesSF("AUTH_TOKEN"),
-          _sharedPreferenceService.getStringValuesSF("BUSINESS_INFO")
-        ]),
+        future: _sharedPreferenceService.getStringValuesSF("AUTH_TOKEN"),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           // await _pushNotificationService.initialise();
           print('snapshots: ${snapshot.data}');
@@ -293,14 +279,10 @@ class _ScreenControllerState extends State<ScreenController> {
             return Scaffold();
             // TODO Reverse if-condition to show OnBoarding
 
-          } else if (snapshot.data[0] == 'empty' || _currentAutoLogoutStatus) {
+          } else if (snapshot.data == 'empty' || _currentAutoLogoutStatus) {
             return LogInScreen();
-          } else if (snapshot.hasData &&
-              snapshot.data[0] != null &&
-              snapshot.data[1] != null) {
+          } else if (snapshot.hasData && snapshot.data != null) {
             return HomePage();
-          } else if (snapshot.data[0] != null && snapshot.data[1] == null) {
-            return Setup();
           } else {
             return OnboardingPage();
           }
